@@ -1,0 +1,249 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Brands {
+  id        Int        @id @default(autoincrement())
+  brandName String     @unique @db.VarChar(255)
+  slug      String     @unique @db.VarChar(255)
+  brandLogo String     @db.VarChar(255)
+  createdAt DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt DateTime   @default(now()) @updatedAt @db.Timestamp(0)
+  Products  Products[]
+}
+
+model Categories {
+  id           Int        @id @default(autoincrement())
+  categoryName String     @unique @db.VarChar(255)
+  slug         String     @unique @db.VarChar(255)
+  categoryLogo String     @db.VarChar(255)
+  createdAt    DateTime   @default(now()) @db.Timestamp(0)
+  updatedAt    DateTime   @default(now()) @updatedAt @db.Timestamp(0)
+  Products     Products[]
+}
+
+model Products {
+  id                Int                 @id @default(autoincrement())
+  title             String              @unique @db.VarChar(255)
+  slug              String              @unique @db.VarChar(255)
+  productImage      String              @db.VarChar(255)
+  price             Float
+  discount          Boolean             @default(false)
+  discountPrice     Float               @default(0)
+  stock             Boolean             @default(true)
+  star              Float
+  shortdes          String              @db.VarChar(500)
+  remark            Products_remark
+  brandId           Int
+  categoryId        Int
+  createdAt         DateTime            @default(now()) @db.Timestamp(0)
+  updatedAt         DateTime            @default(now()) @updatedAt @db.Timestamp(0)
+  Brands            Brands              @relation(fields: [brandId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Categories        Categories          @relation(fields: [categoryId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Product_details   Product_details[]
+  Product_slider    Product_slider?
+  Products_cart     Products_cart[]
+  Products_wishlist Products_wishlist[]
+  Products_review   Products_review[]
+  Invoice_products  Invoice_products[]
+}
+
+model Product_details {
+  id          Int      @id @default(autoincrement())
+  image       String   @db.VarChar(255)
+  description String   @db.Text
+  color       String   @db.VarChar(255)
+  size        String   @db.VarChar(255)
+  productId   Int      @unique
+  createdAt   DateTime @default(now()) @db.Timestamp(0)
+  updatedAt   DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  Products    Products @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Product_slider {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique @db.VarChar(255)
+  slug      String   @unique @db.VarChar(255)
+  shortdes  String   @db.VarChar(500)
+  image     String   @db.VarChar(255)
+  price     Float
+  productId Int      @unique
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  Products  Products @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Users {
+  id                Int                 @id @default(autoincrement())
+  email             String              @unique @db.VarChar(255)
+  otp               String              @db.VarChar(255)
+  role              Role                @default(USER)
+  createdAt         DateTime            @default(now()) @db.Timestamp(0)
+  updatedAt         DateTime            @default(now()) @updatedAt @db.Timestamp(0)
+  Customers_profile Customers_profile?
+  Products_cart     Products_cart[]
+  Products_wishlist Products_wishlist[]
+  Invoice           Invoice[]
+  Invoice_products  Invoice_products[]
+}
+
+model Customers_profile {
+  id              Int               @id @default(autoincrement())
+  name            String            @db.VarChar(255)
+  phone           String            @unique @db.VarChar(255)
+  address         String            @db.VarChar(255)
+  city            String            @db.VarChar(255)
+  state           String            @db.VarChar(255)
+  country         String            @db.VarChar(255)
+  zip             String            @db.VarChar(255)
+  ship_name       String            @db.VarChar(255)
+  ship_phone      String            @db.VarChar(255)
+  ship_city       String            @db.VarChar(255)
+  ship_state      String            @db.VarChar(255)
+  ship_country    String            @db.VarChar(255)
+  ship_zip        String            @db.VarChar(255)
+  ship_address    String            @db.VarChar(255)
+  userId          Int               @unique
+  createdAt       DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt       DateTime          @default(now()) @updatedAt @db.Timestamp(0)
+  Users           Users             @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Products_review Products_review[]
+}
+
+model Products_cart {
+  id        Int      @id @default(autoincrement())
+  qty       Float
+  color     String   @db.VarChar(255)
+  size      String   @db.VarChar(255)
+  productId Int
+  userId    Int
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  Products  Products @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Users     Users    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Products_wishlist {
+  id        Int      @id @default(autoincrement())
+  productId Int
+  userId    Int
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  Products  Products @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Users     Users    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Products_review {
+  id                Int               @id @default(autoincrement())
+  review            String            @db.Text
+  star              Float
+  productId         Int
+  customerId        Int
+  createdAt         DateTime          @default(now()) @db.Timestamp(0)
+  updatedAt         DateTime          @default(now()) @updatedAt @db.Timestamp(0)
+  Products          Products          @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Customers_profile Customers_profile @relation(fields: [customerId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Invoice {
+  id               Int                @id @default(autoincrement())
+  total            Float
+  vat              Float
+  payable          Float
+  cus_details      String             @db.VarChar(500)
+  ship_details     String             @db.VarChar(500)
+  tran_id          String             @db.VarChar(255)
+  val_id           String             @default("0") @db.VarChar(255)
+  delivery_status  delivery_status
+  payment_status   String             @db.VarChar(255)
+  userId           Int
+  createdAt        DateTime           @default(now()) @db.Timestamp(0)
+  updatedAt        DateTime           @default(now()) @updatedAt @db.Timestamp(0)
+  Users            Users              @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Invoice_products Invoice_products[]
+}
+
+model Invoice_products {
+  id        Int      @id @default(autoincrement())
+  qty       Float
+  salePrice Float
+  color     String   @db.VarChar(255)
+  size      String   @db.VarChar(255)
+  productId Int
+  invoiceId Int
+  userId    Int
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+  Products  Products @relation(fields: [productId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Invoice   Invoice  @relation(fields: [invoiceId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  Users     Users    @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+}
+
+model Policies {
+  id        Int           @id @default(autoincrement())
+  type      policies_type @unique
+  title     String        @unique @db.VarChar(255)
+  content   String        @db.Text
+  createdAt DateTime      @default(now()) @db.Timestamp(0)
+  updatedAt DateTime      @default(now()) @updatedAt @db.Timestamp(0)
+}
+
+model Sslcommerz_payment {
+  id           Int      @id @default(autoincrement())
+  store_id     String   @db.VarChar(255)
+  store_passwd String   @db.VarChar(255)
+  currency     String   @db.VarChar(255)
+  success_url  String   @db.VarChar(255)
+  fail_url     String   @db.VarChar(255)
+  cancel_url   String   @db.VarChar(255)
+  ipn_url      String   @db.VarChar(255)
+  initial_url  String   @db.VarChar(255)
+  created_at   DateTime @default(now()) @db.Timestamp(0)
+  updated_at   DateTime @default(now()) @updatedAt @db.Timestamp(0)
+}
+
+model Features {
+  id        Int      @id @default(autoincrement())
+  title     String   @unique @db.VarChar(255)
+  content   String   @db.Text
+  image     String   @db.VarChar(500)
+  createdAt DateTime @default(now()) @db.Timestamp(0)
+  updatedAt DateTime @default(now()) @updatedAt @db.Timestamp(0)
+}
+
+enum Products_remark {
+  POPULAR
+  NEW
+  TOP
+  SPECIAL
+  TRENDING
+  REGULAR
+}
+
+enum delivery_status {
+  PENDING
+  COMPLETED
+  PROCESSING
+}
+
+enum policies_type {
+  PRIVACY
+  TERMS
+  SHIPPING
+  REFUND
+  PAYMENT
+  ABOUT
+  CONTACT
+  FAQ
+  BLOG
+}
+
+enum Role {
+  USER
+  ADMIN
+}
