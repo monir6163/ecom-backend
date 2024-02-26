@@ -4,8 +4,8 @@ const router = require("express").Router();
 
 router.post("/", brandController.add_brand);
 router.get("/", brandController.get_brand);
-// router.get("/:id", brandController.get_brand);
-// router.put("/:id", brandController.update_brand);
-// router.delete("/:id", brandController.delete_brand);
+router.get("/:id", brandController.get_single_brand);
+router.put("/:id", brandController.update_brand);
+router.delete("/:id", brandController.delete_brand);
 
 module.exports = router;
