@@ -1,5 +1,5 @@
 const { formidable } = require("formidable");
-const brands = require("../services/brand/brandServices");
+const brands = require("../../services/brand/brandServices");
 
 class brandController {
   get_brand = async (req, res, next) => {

@@ -1,8 +1,8 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
-const error = require("../../../utlis/error");
-const { cloudinary } = require("../../../utlis/cloudinary");
-const { SlugMake } = require("../../../utlis/Slugify");
+const error = require("../../utlis/error");
+const { cloudinary } = require("../../utlis/cloudinary");
+const { SlugMake } = require("../../utlis/Slugify");
 
 //get all brands
 async function findBrands() {
